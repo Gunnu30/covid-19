@@ -76,7 +76,7 @@ app.get('/states/', verifyUser, async (req, res) => {
     const getStates = await db.all(allStatesQuery)
     const getStatesLen = getStates.length
     if (getStatesLen > 0) {
-      res.status(200).send({msg: 'Seccessflly fetched the States', getStates})
+      res.status(200).send({getStates: getStates})
     } else {
       res.status(404).send({msg: 'No States'})
     }
@@ -203,4 +203,4 @@ app.get('/states/:stateId/stats/', verifyUser, async (req, res) => {
     res.status(500).send({msg: 'Server Error'})
   }
 })
-module.export = app
+module.exports = app
