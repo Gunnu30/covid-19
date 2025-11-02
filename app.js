@@ -28,45 +28,46 @@ const initializeADbConnection = async () => {
 initializeADbConnection()
 // first api call
 app.post('/login/', async (req, res) => {
-  const { username, password } = req.body;
+  const {username, password} = req.body
 
   try {
-    const user = await db.get('SELECT * FROM user WHERE username = ?', [username]);
+    const user = await db.get('SELECT * FROM user WHERE username = ?', [
+      username,
+    ])
 
     if (!user) {
-      res.status(400).send('Invalid user'); // ✅ exact text
-      return;
+      res.status(400).send('Invalid user') // ✅ exact text
+      return
     }
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password)
 
     if (match) {
-      const token = jwt.sign({ username: user.username }, 'MY_SECRETE_KEY');
-      res.status(200).send({ jwtToken: token }); // ✅ exact key name
+      const token = jwt.sign({username: user.username}, 'MY_SECRETE_KEY')
+      res.status(200).send({jwtToken: token}) // ✅ exact key name
     } else {
-      res.status(400).send('Invalid password'); // ✅ exact text
+      res.status(400).send('Invalid password') // ✅ exact text
     }
   } catch (e) {
-    console.error(e.message);
-    res.status(500).send('Server error');
+    console.error(e.message)
+    res.status(500).send('Server error')
   }
-});
-
+})
 
 const verifyUser = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
-    res.status(401).send('Invalid JWT Token'); // ✅ exact text
-    return;
+    res.status(401).send('Invalid JWT Token') // ✅ exact text
+    return
   }
   try {
-    const decoded = jwt.verify(token, 'MY_SECRETE_KEY');
-    req.user = decoded;
-    next();
+    const decoded = jwt.verify(token, 'MY_SECRETE_KEY')
+    req.user = decoded
+    next()
   } catch (e) {
-    res.status(401).send('Invalid JWT Token'); // ✅ exact text
+    res.status(401).send('Invalid JWT Token') // ✅ exact text
   }
-};
+}
 
 // second api call
 app.get('/states/', verifyUser, async (req, res) => {
@@ -116,7 +117,7 @@ app.post('/districts/', verifyUser, async (req, res) => {
       active,
       deaths,
     ])
-    res.status(200).send('District Successfully Added'); // ✅ exact text
+    res.status(200).send('District Successfully Added') // ✅ exact text
   } catch (e) {
     res.status(500).send({msg: 'Server Error'})
     console.log(e.message)
@@ -147,7 +148,7 @@ app.delete('/districts/:districtId/', verifyUser, async (req, res) => {
   try {
     const deleteDistQuery = `delete from district where district_id = ?`
     await db.run(deleteDistQuery, [districtId])
-    res.status(200).send('District Removed'); // ✅ exact text
+    res.status(200).send('District Removed') // ✅ exact text
   } catch (e) {
     res.status(500).send({msg: 'Server Error'})
     console.log(e.message)
@@ -171,7 +172,7 @@ app.put('/districts/:districtId/', verifyUser, async (req, res) => {
       deaths,
       districtId,
     ])
-    res.status(200).send('District Details Updated'); // ✅ exact text
+    res.status(200).send('District Details Updated') // ✅ exact text
   } catch (e) {
     console.error(e.message)
     res.status(500).send({msg: 'Server Error'})
@@ -202,4 +203,4 @@ app.get('/states/:stateId/stats/', verifyUser, async (req, res) => {
     res.status(500).send({msg: 'Server Error'})
   }
 })
-modules.export = app;
+module.export = app
